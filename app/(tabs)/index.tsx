@@ -4,7 +4,7 @@ import { images } from "@/constants/images";
 import { useRouter } from "expo-router";
 import { Image, ScrollView, StatusBar, View } from "react-native";
 
-const index = () => {
+const Index = () => {
   const router = useRouter();
   return (
     <View className="flex-1 bg-primary">
@@ -29,4 +29,4 @@ const index = () => {
     </View>
   );
 };
-export default index;
+export default Index;
