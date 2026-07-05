@@ -18,23 +18,11 @@ export const fetchMovies = async ({ query }: { query: string }) => {
   });
 
   if (!response.ok) {
-    // @ts-ignore
-    throw new Error("Failed to fetch movies", response.statusText);
+    throw new Error(
+      `Failed to fetch movies: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data = await response.json();
   return data.results;
 };
-// const url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc';
-// const options = {
-//   method: 'GET',
-//   headers: {
-//     accept: 'application/json',
-//     Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGI0OTQzYzdiM2YzNTMyNzVlNGMzYTg1ZGNkNjk4NCIsIm5iZiI6MTc4MzE4Nzg4NS41ODYsInN1YiI6IjZhNDk0OWFkN2ZmNmMxM2U4YzE5YTY0ZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.j74_LibNHtwFjaFoNldzfe6eyt1zfoMqcl5wbm78NYI'
-//   }
-// };
-
-// fetch(url, options)
-//   .then(res => res.json())
-//   .then(json => console.log(json))
-//   .catch(err => console.error(err));
