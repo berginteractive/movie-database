@@ -12,6 +12,7 @@ import {
   ScrollView,
   StatusBar,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -22,13 +23,12 @@ const Index = () => {
     data: movies,
     loading: moviesLoading,
     error: moviesError,
+    refetch: refetchMovies,
   } = useFetch(() =>
     fetchMovies({
       query: "",
     }),
   );
-
-  console.log("movies", movies);
 
   return (
     <View className="flex-1 bg-primary">
@@ -43,20 +43,30 @@ const Index = () => {
           source={icons.logo}
           className="w-12 h-10 self-center mt-20 mb-5"
         />
-        {moviesLoading ? (
-          <ActivityIndicator
-            size="large"
-            color="#AB8BFF"
-            className="mt-10 self-center"
+        <View className="flex-1 mt-5">
+          <SearchBar
+            onPress={() => router.push("/search")}
+            placeholder="Search for a movie"
           />
-        ) : moviesError ? (
-          <Text>Error: {moviesError?.message}</Text>
-        ) : (
-          <View className="flex-1 mt-5">
-            <SearchBar
-              onPress={() => router.push("/search")}
-              placeholder="Search for a movie"
+          {moviesLoading ? (
+            <ActivityIndicator
+              size="large"
+              color="#AB8BFF"
+              className="mt-10 self-center"
             />
+          ) : moviesError ? (
+            <View className="mt-10 items-center">
+              <Text className="text-white text-center">
+                Error: {moviesError?.message}
+              </Text>
+              <TouchableOpacity
+                onPress={() => refetchMovies()}
+                className="mt-4 bg-dark-100 px-6 py-3 rounded-full"
+              >
+                <Text className="text-white font-bold">Retry</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
             <>
               <Text className="text-white text-lg mb-3 mt-5 font-bold">
                 Latest Movies
@@ -76,8 +86,8 @@ const Index = () => {
                 renderItem={({ item }) => <MovieCard {...item} />}
               />
             </>
-          </View>
-        )}
+          )}
+        </View>
       </ScrollView>
     </View>
   );
