@@ -47,6 +47,7 @@ const Index = () => {
           <SearchBar
             onPress={() => router.push("/search")}
             placeholder="Search for a movie"
+            value=""
           />
           {moviesLoading ? (
             <ActivityIndicator
