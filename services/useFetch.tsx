@@ -15,12 +15,14 @@ const useFetch = <T,>(fetchFunction: () => Promise<T>, autoFetch = true) => {
       if (requestId === requestIdRef.current) {
         setData(result);
       }
+      return result;
     } catch (err) {
       if (requestId === requestIdRef.current) {
         setError(
           err instanceof Error ? err : new Error("An unknown error occurred"),
         );
       }
+      return null;
     } finally {
       if (requestId === requestIdRef.current) {
         setLoading(false);
@@ -40,7 +42,7 @@ const useFetch = <T,>(fetchFunction: () => Promise<T>, autoFetch = true) => {
   }, []);
 
   const refetch = () => {
-    fetchData();
+    return fetchData();
   };
 
   return { data, loading, error, refetch, fetchData, reset };
