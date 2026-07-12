@@ -85,7 +85,7 @@ export const getTrendingMovies = async (): Promise<
     });
 
     // Different search terms can share the same top movie result, so rows
-    // aren't guaranteed unique per movie_id - dedupe before slicing to 5.
+    // aren't guaranteed unique per movie_id - dedupe before slicing to 10.
     const rows = result.rows as unknown as TrendingMovie[];
     const seen = new Set<number>();
     const uniqueRows = rows.filter((row) => {
@@ -96,7 +96,10 @@ export const getTrendingMovies = async (): Promise<
 
     return uniqueRows.slice(0, 10);
   } catch (error) {
-    console.log(error);
+    console.log(
+      "getTrendingMovies failed:",
+      error instanceof Error ? error.message : "unknown error",
+    );
     return undefined;
   }
 };
