@@ -1,5 +1,5 @@
 // track the searches made by a user
-import { Client, TablesDB } from "react-native-appwrite";
+import { Client, Query, TablesDB } from "react-native-appwrite";
 
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const TABLE_ID = process.env.EXPO_PUBLIC_APPWRITE_TABLE_ID!;
@@ -38,7 +38,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
     return;
   } catch (error) {
     if (!(error instanceof Error) || (error as any).code !== 404) {
-      logSearchCountError(error);
+      logUpdateSearchCountError(error);
       return;
     }
   }
@@ -60,16 +60,46 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
       },
     });
   } catch (error) {
-    logSearchCountError(error);
+    logUpdateSearchCountError(error);
   }
 };
 
 // This is a non-critical analytics side effect - never let it surface as an
 // unhandled rejection to callers, and avoid logging the raw Appwrite error
 // (it can include request/response details) beyond a short message.
-const logSearchCountError = (error: unknown) => {
+const logUpdateSearchCountError = (error: unknown) => {
   console.log(
     "updateSearchCount failed:",
     error instanceof Error ? error.message : "unknown error",
   );
+};
+
+export const getTrendingMovies = async (): Promise<
+  TrendingMovie[] | undefined
+> => {
+  try {
+    const result = await tablesDB.listRows({
+      databaseId: DATABASE_ID,
+      tableId: TABLE_ID,
+      queries: [Query.limit(20), Query.orderDesc("count")],
+    });
+
+    // Different search terms can share the same top movie result, so rows
+    // aren't guaranteed unique per movie_id - dedupe before slicing to 10.
+    const rows = result.rows as unknown as TrendingMovie[];
+    const seen = new Set<number>();
+    const uniqueRows = rows.filter((row) => {
+      if (seen.has(row.movie_id)) return false;
+      seen.add(row.movie_id);
+      return true;
+    });
+
+    return uniqueRows.slice(0, 10);
+  } catch (error) {
+    console.log(
+      "getTrendingMovies failed:",
+      error instanceof Error ? error.message : "unknown error",
+    );
+    return undefined;
+  }
 };
